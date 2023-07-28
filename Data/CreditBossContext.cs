@@ -12,6 +12,7 @@ public class CreditBossContext : DbContext {
     public DbSet<PaymentPlan> PaymentPlan { get; set; }
     public DbSet<Payment> Payment { get; set; }
     public DbSet<User> User { get; set; }
-    
-    
+    public DbSet<References> References { get; set; }
+    public DbSet<WorkDetails> WorkDetails { get; set; }
+
 }

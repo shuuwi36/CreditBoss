@@ -28,7 +28,7 @@ public class ClientService : IClientService
             Email = client.Email,
             Phone = client.Phone,
             Address = client.Address,
-            Birthdate = client.Birthdate,
+            Birthdate = DateOnly.FromDateTime(client.Birthdate),
             IdentificationNumber = client.IdentificationNumber,
             Status = GetClientStatus(client.Credits)
         }).ToList();
@@ -43,8 +43,13 @@ public class ClientService : IClientService
         return clients;
     }
 
-    private static string GetClientStatus(ICollection<Credit> credits)
+    private static string GetClientStatus(ICollection<Credit>? credits)
     {
+        if (credits is null)
+        {
+            return ClientStatus.Inactive.ToString();
+        }
+        
         if (credits.Any(c => c.Status == CreditStatus.Late))
         {
             return ClientStatus.Late.ToString(); 
@@ -94,17 +99,45 @@ public class ClientService : IClientService
     
     public async Task Create(ClientDto clientDto)
     {
-        await _db.Client.AddAsync(new Client()
+        var client = new Client()
         {
             FirstName = clientDto.FirstName,
             LastName = clientDto.LastName,
             Address = clientDto.Address,
-            Birthdate = clientDto.Birthdate,
+            Birthdate = clientDto.Birthdate.ToDateTime(TimeOnly.MinValue),
             IdentificationNumber = clientDto.IdentificationNumber,
             Phone = clientDto.Phone,
             Email = clientDto.Email
-        });
+        };
+        await _db.Client.AddAsync(client);
         await _db.SaveChangesAsync();
+        
+        await _db.WorkDetails.AddAsync(new WorkDetails()
+        {
+            ClientId = client.Id,
+            Workplace = clientDto.WorkPlace,
+            Workphone = clientDto.WorkPhone,
+            BossName = clientDto.BossName,
+            BossPhone = clientDto.BossPhone,
+            StartDate = clientDto.StartDate.ToDateTime(TimeOnly.MinValue),
+            WorkAddress = clientDto.WorkAddress
+        });
+
+        await _db.References.AddAsync(new References()
+        {
+            ClientId = client.Id,
+            PersonalName1 = clientDto.PersonalReference1,
+            PersonalPhone1 = clientDto.PersonalReferencePhone1,
+            PersonalName2 = clientDto.PersonalReference2,
+            PersonalPhone2 = clientDto.PersonalReferencePhone2,
+            WorkName1 = clientDto.WorkReference1,
+            WorkPhone1 = clientDto.WorkReferencePhone1,
+            WorkName2 = clientDto.WorkReference2,
+            WorkPhone2 = clientDto.WorkReferencePhone2
+        });
+        
+        await _db.SaveChangesAsync();
+
     }
     
 }
