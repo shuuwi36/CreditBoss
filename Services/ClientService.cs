@@ -67,6 +67,7 @@ public class ClientService : IClientService
         if (!string.IsNullOrEmpty(query))
         {
             queryableClients = queryableClients.Where(client =>
+                IsMatch(client.Id.ToString(), query) ||
                 IsMatch(client.FirstName, query) ||
                 IsMatch(client.LastName, query) ||
                 IsMatch(client.Phone, query) ||

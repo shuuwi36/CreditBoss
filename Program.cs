@@ -8,8 +8,6 @@ builder.Services.ConfigureSwagger();
 builder.Services.ConfigureDependencyServices();
 builder.Services.ConfigureAuthentication(builder.Configuration);
 
-
-
 var app = builder.Build();
 app.ApplyMigrations();
 app.UseSwagger();

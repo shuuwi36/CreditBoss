@@ -1,4 +1,5 @@
 using CreditBoss.Dto;
+using CreditBoss.Enums;
 using CreditBoss.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,6 @@ namespace CreditBoss.Controllers;
 //[Authorize]
 public class ClientController : ControllerBase
 {
-
     private readonly IClientService _clientService;
 
     public ClientController(IClientService clientService)
@@ -29,6 +29,13 @@ public class ClientController : ControllerBase
     {
         var stats = await _clientService.GetClientStatsAsync();
         return Ok(stats);
+    }
+    
+    [HttpGet("Statuses")]
+    public IActionResult GetAll()
+    {
+        var clientStatuses = Enum.GetNames(typeof(ClientStatus));
+        return Ok(clientStatuses);
     }
     
     [HttpPost]

@@ -51,6 +51,7 @@ public static class ServiceExtensions
         services.AddScoped<IClientService, ClientService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ICreditService, CreditService>();
     }
     
     public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
